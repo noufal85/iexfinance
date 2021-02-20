@@ -35,9 +35,9 @@ sys.path.insert(0, os.path.abspath("../.."))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.githubpages",
+    "sphinx.ext.extlinks",
     "IPython.sphinxext.ipython_console_highlighting",
     "IPython.sphinxext.ipython_directive",
-    "sphinxcontrib.napoleon",
     "sphinx.ext.todo",
 ]
 
@@ -55,7 +55,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "iexfinance"
-copyright = "2019, Addison Lynch"
+copyright = "2020, Addison Lynch"
 author = "Addison Lynch"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -177,3 +177,9 @@ texinfo_documents = [
         "Miscellaneous",
     )
 ]
+
+# extlinks
+extlinks = {
+    "issue": ("https://github.com/addisonlynch/iexfinance/issues/%s", "GH"),
+    "user": ("https://github.com/%s", ""),
+}

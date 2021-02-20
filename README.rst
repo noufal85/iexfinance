@@ -34,7 +34,7 @@ Forex/Currencies, Options, Commodities, Bonds, and Cryptocurrencies:
 Example
 -------
 
-.. image:: https://addisonlynch.github.io/public/img/iexexample.gif
+.. image:: https://raw.githubusercontent.com/addisonlynch/iexfinance/master/docs/source/images/iexexample.gif
 
 
 Documentation
@@ -63,8 +63,8 @@ From development repository (dev version):
 
 
 
-Authentication
---------------
+What's Needed to Access IEX Cloud?
+----------------------------------
 
 An IEX Cloud account is required to acecss the IEX Cloud API. Various `plans <https://iexcloud.io/pricing/>`__
 are availalbe, free, paid, and pay-as-you-go.
@@ -82,7 +82,7 @@ The authentication token can also be passed to any function call:
 
     from iexfinance.refdata import get_symbols
 
-    get_symbols(output_format='pandas', token="<YOUR AUTH TOKEN>")
+    get_symbols(token="<YOUR-TOKEN>")
 
 or at the instantiation of a ``Stock`` object:
 
@@ -90,7 +90,7 @@ or at the instantiation of a ``Stock`` object:
 
     from iexfinance.stocks import Stock
 
-    a = Stock("AAPL", token="<YOUR AUTH TOKEN>")
+    a = Stock("AAPL", token="<YOUR-TOKEN>")
     a.get_quote()
 
 
@@ -100,13 +100,6 @@ How This Package is Structured
 ``iexfinance`` is designed to mirror the structure of the IEX Cloud API. The
 following IEX Cloud endpoint groups are mapped to their respective
 ``iexfinance`` modules:
-
-- Account - ``account`` (`iexfinance docs <https://addisonlynch.github.io/iexfinance/stable/account.html>`__ | `IEX Docs <https://iexcloud.io/docs/api/#account>`__)
-- Stocks - ``stocks`` (`iexfinance docs <https://addisonlynch.github.io/iexfinance/stable/stocks.html>`__ | `IEX Docs <https://iexcloud.io/api/docs/#stocks>`__)
-- Alternative Data - ``altdata`` (`iexfinance docs <https://addisonlynch.github.io/iexfinance/stable/altdata.html>`__ | `IEX Cloud Docs <https://iexcloud.io/docs/api/#alternative-data>`__)
-- Reference Data - ``refdata`` (`iexfinance docs <http://addisonlynch.github.io/iexfinance/stable/refdata.html>`__ | `IEX Cloud Docs <https://iexcloud.io/docs/api/#reference-data>`__)
-- Investors Exchange Data - ``iexdata`` (`iexfinance docs <http://addisonlynch.github.io/iexfinance/stable/iexdata.html>`__ | `IEX Cloud Docs <https://iexcloud.io/docs/api/#investors-exchange-data>`__)
-- API System Metadata - ``apidata`` (`iexfinance docs <http://addisonlynch.github.io/iexfinance/stable/apistatus.html>`__ | `IEX Cloud Docs <https://iexcloud.io/docs/api/#api-system-metadata>`__)
 
 The most commonly-used
 endpoints are the `Stocks <https://iexcloud.io/docs/api/#stocks>`__
@@ -135,38 +128,6 @@ group, obtain the `Social Sentiment <https://iexcloud.io/docs/api/#social-sentim
 
     get_social_sentiment("AAPL")
 
-
-Configuration
--------------
-
-Selecting an API Version
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-``iexfinance`` now defaults to IEX Cloud for all calls. The use of
-``v1`` as ``IEX_API_VERSION`` now calls IEX Cloud version 1 (v1).
-
-The desired IEX API version can be specified using the ``IEX_API_VERSION``
-environment variable. The following versions are currently supported:
-
-* ``v1`` - **default** (now same as ``iexcloud-v1``)
-* ``iexcloud-beta``
-* ``iexcloud-v1``
-* ``iexcloud-sandbox`` - for use with the `sandbox environment`_ (test token
-  must be used)
-
-.. _`sandbox environment`: https://iexcloud.io/docs/api/#sandbox
-
-Output Formatting
-~~~~~~~~~~~~~~~~~
-
-By default, ``iexfinance`` returns data formatted *exactly* as received from
-the IEX Endpoint. `pandas <https://pandas.pydata.org/>`__ ``DataFrame`` output
-formatting is available for most endpoints.
-
-pandas ``DataFrame`` output formatting can be selected by setting the
-``IEX_OUTPUT_FORMAT`` environment variable to ``pandas`` or by passing
-``output_format`` as an argument to any function call (or at the instantiation
-of a ``Stock`` object).
 
 Common Usage Examples
 ---------------------
@@ -385,6 +346,64 @@ API Status
 
     get_api_status()
 
+
+Configuration
+-------------
+.. _config.formatting:
+
+Output Formatting
+-----------------
+
+By default, ``iexfinance`` returns data for most endpoints in a `pandas <https://pandas.pydata.org/>`__ ``DataFrame``.
+
+Selecting ``json`` as the output format returns data formatted *exactly* as received from
+the IEX Endpoint. Configuring ``iexfinance``'s output format can be done in two ways:
+
+.. _config.formatting.env:
+
+Environment Variable (Recommended)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For persistent configuration of a specified output format, use the environment
+variable ``IEX_OUTPUT_FORMAT``. This value will be overridden by the
+``output_format`` argument if it is passed.
+
+macOS/Linux
+^^^^^^^^^^^
+
+Type the following command into your terminal:
+
+.. code-block:: bash
+
+    $ export IEX_OUTPUT_FORMAT=pandas
+
+Windows
+^^^^^^^
+
+See `here <https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10>`__ for instructions on setting environment variables in Windows operating systems.
+
+.. _config.formatting.arg:
+
+``output_format`` Argument
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pass ``output_format``  as an argument to any function call:
+
+.. code-block:: python
+
+    from iexfinance.refdata import get_symbols
+
+    get_symbols(output_format='pandas').head()
+
+or at the instantiation of a ``Stock`` object:
+
+.. code-block:: python
+
+    from iexfinance.stocks import Stock
+
+    aapl = Stock("AAPL", output_format='pandas')
+    aapl.get_quote().head()
+
 Contact
 -------
 
@@ -395,6 +414,6 @@ Twitter: `alynchfc <https://www.twitter.com/alynchfc>`__
 License
 -------
 
-Copyright © 2019 Addison Lynch
+Copyright © 2020 Addison Lynch
 
 See LICENSE for details

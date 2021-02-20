@@ -1,7 +1,7 @@
-import requests
-
 import datetime as dt
+
 import pandas as pd
+import requests
 from pandas import to_datetime
 from pandas.api.types import is_number
 
@@ -25,6 +25,7 @@ def _sanitize_dates(start, end):
         Desired end date
     """
     today = dt.date.today()
+    today = to_datetime(today)
 
     if is_number(start):
         # regard int as year
@@ -53,13 +54,13 @@ def _sanitize_dates(start, end):
     return start, end
 
 
-def _handle_lists(l, mult=True, err_msg=None):
-    if isinstance(l, (str, int)):
-        return [l] if mult is True else l
-    elif isinstance(l, pd.DataFrame) and mult is True:
-        return list(l.index)
+def _handle_lists(lister, mult=True, err_msg=None):
+    if isinstance(lister, (str, int)):
+        return [lister] if mult is True else lister
+    elif isinstance(lister, pd.DataFrame) and mult is True:
+        return list(lister.index)
     elif mult is True:
-        return list(l)
+        return list(lister)
     else:
         raise ValueError(err_msg or "Only 1 symbol/market parameter allowed.")
 

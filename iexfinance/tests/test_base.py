@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 from iexfinance.base import _IEXBase
@@ -28,7 +29,7 @@ class TestBase(object):
     def test_all_defaults(self, block_format_env):
         base = _IEXBase()
 
-        assert base.output_format == "json"
+        assert base.output_format == "pandas"
         assert base.pause == 0.5
 
     def test_output_format_passed(self):

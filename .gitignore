@@ -2,6 +2,11 @@
 "site/"
 "iexenv/"
 "stfpconfig.json"
+
+.DS_Store
+*.DS_Store
+
+/.pytest_cache
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -113,3 +118,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 sftp-config\.json
+testfile.py

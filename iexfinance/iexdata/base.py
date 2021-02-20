@@ -1,14 +1,8 @@
 import datetime as dt
 from datetime import datetime, timedelta
 
-import pandas as pd
-
 from iexfinance.base import _IEXBase
 from iexfinance.utils import _handle_lists, _sanitize_dates
-
-# Data provided for free by IEX
-# See https://iextrading.com/api-exhibit-a/ for additional information
-# and conditions of use
 
 
 class Market(_IEXBase):
@@ -23,8 +17,6 @@ class Market(_IEXBase):
         ----------
         symbols : string, array-like object (list, tuple, Series), or DataFrame
             Desired symbols for retrieval
-        output_format: str, default 'json', optional
-            Desired output format (json or pandas)
         kwargs:
             Additional request options (see base class)
         """
@@ -41,6 +33,10 @@ class Market(_IEXBase):
                 raise ValueError("Please input a symbol or list of symbols.")
             self.symbols = []
         super(Market, self).__init__(**kwargs)
+
+    @property
+    def output_format(self):
+        return "json"
 
     @property
     def params(self):
@@ -62,7 +58,7 @@ class Market(_IEXBase):
 
 
 class TOPS(Market):
-    """ Class to retrieve IEX TOPS data
+    """Class to retrieve IEX TOPS data
 
     Near-real time aggregated bid and offer positions. IEX's aggregated best
     quoted bid and offer position for all securities on IEX's displayed limit
@@ -70,7 +66,7 @@ class TOPS(Market):
 
     Reference
     ---------
-    https://iextrading.com/developer/docs/#TOPS
+    https://iexcloud.io/docs/api/#TOPS
     """
 
     @property
@@ -83,14 +79,14 @@ class TOPS(Market):
 
 
 class Last(Market):
-    """ Class to retrieve Last quote data
+    """Class to retrieve Last quote data
 
     Last provides trade data for executions on IEX. Provides last sale price,
     size and time.
 
     Reference
     ---------
-    https://iextrading.com/developer/docs/#Last
+    https://iexcloud.io/docs/api/#Last
     """
 
     @property
@@ -103,7 +99,7 @@ class Last(Market):
 
 
 class DEEP(Market):
-    """ Class to retrieve DEEP order book data
+    """Class to retrieve DEEP order book data
 
 
     Real-time depth of book quotations direct from IEX. Returns aggregated
@@ -115,7 +111,7 @@ class DEEP(Market):
 
     Reference
     ---------
-    https://iextrading.com/developer/docs/#DEEP
+    https://iexcloud.io/docs/api/#DEEP
     """
 
     @property
@@ -135,13 +131,13 @@ class DEEP(Market):
 
 
 class Book(Market):
-    """ Class to retrieve IEX DEEP Book data
+    """Class to retrieve IEX DEEP Book data
 
     Retrieve IEX's bids and asks for given symbols
 
     Reference
     ---------
-    https://iextrading.com/developer/docs/#Book
+    https://iexcloud.io/docs/api/#Book
 
     Notes
     -----
@@ -169,7 +165,7 @@ class Stats(_IEXBase):
     Base class for obtaining date from the IEX Stats endpoints
     of IEX.
 
-    Reference: https://iextrading.com/developer/docs/#iex-stats
+    Reference: https://iexcloud.io/docs/api/#iex-stats
     """
 
     @property
@@ -188,12 +184,16 @@ class Stats(_IEXBase):
                     + " until now"
                 )
 
+    @property
+    def output_format(self):
+        return "json"
+
 
 class IntradayReader(Stats):
     """
     Class for obtaining data from the Intraday endpoint of IEX Stats
 
-    Reference: https://iextrading.com/developer/docs/#intraday
+    Reference: https://iexcloud.io/docs/api/#intraday
     """
 
     @property
@@ -205,7 +205,7 @@ class RecentReader(Stats):
     """
     Class for obtaining data from the Recent endpoint of IEX Stats
 
-    Reference: https://iextrading.com/developer/docs/#recent
+    Reference: https://iexcloud.io/docs/api/#recent
     """
 
     @property
@@ -217,7 +217,7 @@ class RecordsReader(Stats):
     """
     Class for obtaining data from the Records endpoint of IEX Stats
 
-    Reference: https://iextrading.com/developer/docs/#records
+    Reference: https://iexcloud.io/docs/api/#records
     """
 
     @property
@@ -239,15 +239,13 @@ class DailySummaryReader(Stats):
         Ending date
     last: int
         Period between 1 and 90 days, overrides dates
-    output_format: str, default 'json', optional
-        Desired output format (json or pandas)
     kwargs:
         Additional request parameters (see base class)
 
 
     Reference
     ---------
-    https://iextrading.com/developer/docs/#historical-daily
+    https://iexcloud.io/docs/api/#historical-daily
 
     """
 
@@ -323,10 +321,7 @@ class DailySummaryReader(Stats):
             self.curr_date = date
             tdf = super(DailySummaryReader, self).fetch()
             dfs.append(tdf)
-        if self.output_format == "pandas":
-            return pd.concat(dfs)
-        else:
-            return dfs
+        return dfs
 
 
 class MonthlySummaryReader(Stats):
@@ -339,15 +334,13 @@ class MonthlySummaryReader(Stats):
         Desired start date
     end : str, int, date, datetime, Timestamp
         Desired end date
-    output_format: str, default 'json', optional
-        Desired output format (json or pandas)
     kwargs:
         Additional request parameters (see base class)
 
 
     Reference
     ---------
-    https://iextrading.com/developer/docs/#historical-summary
+    https://iexcloud.io/docs/api/#historical-summary
 
     """
 
@@ -394,16 +387,5 @@ class MonthlySummaryReader(Stats):
         for date in lrange:
             self.curr_date = date
             tdf = super(MonthlySummaryReader, self).fetch()
-
-            # We may not return data if this was a weekend/holiday:
-            if self.output_format == "pandas":
-                if not tdf.empty:
-                    tdf["date"] = date.strftime(self.date_format)
             dfs.append(tdf)
-
-        # We may not return any data if we failed to specify useful parameters:
-        if self.output_format == "pandas":
-            result = pd.concat(dfs) if len(dfs) > 0 else pd.DataFrame()
-            return result.set_index("date")
-        else:
-            return dfs
+        return dfs

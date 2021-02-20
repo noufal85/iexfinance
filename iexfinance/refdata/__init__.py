@@ -1,4 +1,11 @@
-from iexfinance.refdata.base import Symbols, IEXSymbols, TradingDatesReader
+from iexfinance.refdata.base import (
+    IEXSymbols,
+    IntlExchangeSymbols,
+    IntlRegionSymbols,
+    Sectors,
+    Symbols,
+    TradingDatesReader,
+)
 
 
 def get_symbols(**kwargs):
@@ -12,6 +19,17 @@ def get_symbols(**kwargs):
     return Symbols(**kwargs).fetch()
 
 
+def get_sectors(**kwargs):
+    """
+    Returns array of all sectors that IEX Cloud supports
+    for API calls
+
+    Reference: https://iexcloud.io/docs/api/#sectors
+    Data Weighting: ``1`` per call
+    """
+    return Sectors(**kwargs).fetch()
+
+
 def get_iex_symbols(**kwargs):
     """
     Returns array of all symbols the Investor's Exchange
@@ -22,6 +40,42 @@ def get_iex_symbols(**kwargs):
     Data Weighting: ``Free``
     """
     return IEXSymbols(**kwargs).fetch()
+
+
+def get_region_symbols(region, **kwargs):
+    """
+    Returns array of all international symbols in a give
+    region that IEX Cloud supports for API calls
+
+    https://iexcloud.io/docs/api/#international-symbols
+
+    Data Weighting: ``100`` per call
+
+    Parameters
+    ----------
+    region: str
+        2 letter case insensitive string of country codes
+        using ISO 3166-1 alpha-2
+    """
+    return IntlRegionSymbols(region, **kwargs).fetch()
+
+
+def get_exchange_symbols(exchange, **kwargs):
+    """
+    Returns array of all international symbols in a given
+    exchange that IEX Cloud supports for API calls
+
+    https://iexcloud.io/docs/api/#international-symbols
+
+    Data Weighting: ``100`` per call
+
+    Parameters
+    ----------
+    exchange: str
+        Case insensitive string of Exchange using IEX
+        Supported Exchanges list
+    """
+    return IntlExchangeSymbols(exchange, **kwargs).fetch()
 
 
 def get_us_trading_dates_holidays(type_, direction, last=1, startDate=None, **kwargs):
